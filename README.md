@@ -1,10 +1,14 @@
-<h1 align="center">Transformer Sonification</h1> 
-
-## About
+<div id="toc" align="right">
+  <ul style="list-style: none">
+    <summary>
+      <h1>Language Model Sonification</h1>
+    </summary>
+  </ul>
+</div>
 
 *"What it is or what it does?"* 
 
-This question was posed to me by Professor Ollivier Dyens in January, when I first mentioned that I wanted to hear a language model.
+This question was posed to me by Professor Ollivier Dyens during a discussion on language models earlier this year.
 
 *"Aren't these two the same?"* I replied. 
 
@@ -15,6 +19,8 @@ In 2026, interactions with language models are more accessible than ever before.
 This project was created as part of a fellowship at Building 21, McGill University in Winter 2026 ([building21.ca/scholars/barry-yu](https://www.building21.ca/scholars/barry-yu)). I would like to thank the Building 21 community as well as Andy S. Yu for their endlessly inspiring support. 
 
 ## Setup
+
+*Note: these commands work on MacOS and probably Linux too.*
 
 1. Fork the repo and install requirements:
 ```bash
@@ -41,7 +47,7 @@ python display.py
 
 During each forward pass, the hidden states at the last token position are taken (due to KV caching). Each activation level is mapped to a frequency via
 
-$$\mathrm{freq}(x) = \frac{|x|}{2\sigma_x}(20000-20) + 20$$
+$$\mathrm{freq}(x) := \frac{|x|}{2\sigma_x}(20000-20) + 20$$
 
 where $x$ is the activation level and $\sigma_x$ is the standard deviation of $x$ across a single forward pass. 
 
