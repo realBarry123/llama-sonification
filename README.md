@@ -47,7 +47,8 @@ python display.py
 
 During each forward pass, the hidden states at the last token position are taken (due to KV caching). Each activation level is mapped to a frequency via
 
-$$\mathrm{freq}(x) := \frac{|x|}{2\sigma_x}(20000-20) + 20$$
+$$\mathrm{freq}(x) := \frac{|x|}{z\sigma_x}(f_{upper}-f_{lower}) + f_{lower}$$
+$$z=2, \space\space f_{lower}=20, \space\space f_{upper}=20000$$
 
 where $x$ is the activation level and $\sigma_x$ is the standard deviation of $x$ across a single forward pass. 
 
