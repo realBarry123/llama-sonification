@@ -1,30 +1,31 @@
 import torch
 from scipy.io import wavfile
 
+import config
 from data import pca_reduce, to_uniform
 from masker import Masker
 
 
 class Sonifier():
 
-    def __init__(self, shape, note_length, fs=44100):
+    def __init__(self, shape, fs=44100):
         self._INPUT_SHAPE = shape
         self._FS = fs
-        self._NOTE_LENGTH = note_length
+        self._NOTE_LENGTH = config.NOTE_LENGTH
         self._SAMPLES_PER_NOTE = int(self._FS * self._NOTE_LENGTH)
 
         self.config = {
             "sonification_type": "freq",
-            "freq_lower": 20,
-            "freq_upper": 20000,
-            "max_z": 2,
+            "freq_lower": config.FREQ_LOWER,
+            "freq_upper": config.FREQ_UPPER,
+            "max_z": config.MAX_Z,
 
             "do_interpolate": False,
             "do_diff": False,
             "pca": None,
 
-            "channel_names": ("-b", "-f"),
-            "gain": 0.4,
+            "channel_names": config.CHANNEL_SPLIT,
+            "gain": config.GAIN,
 
             "freq_map": None
         }

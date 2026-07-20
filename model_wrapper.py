@@ -1,18 +1,30 @@
-import os
-from dotenv import load_dotenv
 import torch
 import math
-from transformers import AutoTokenizer, AutoModelForCausalLM
 
 class ModelWrapper():
 
     def __init__(self):
+        import os
+        from dotenv import load_dotenv
+        import config
+
+        os.environ["HF_ENDPOINT"] = config.HF_ENDPOINT
+        from huggingface_hub import login, get_token
+        from transformers import AutoTokenizer, AutoModelForCausalLM
+
         load_dotenv()
         CACHE_PATH = os.getenv("CACHE_PATH")
-        self.tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.2-1B", cache_dir=CACHE_PATH)
-        self.model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.2-1B", cache_dir=CACHE_PATH)
-        self.chunk_size = 4
-        self.context_limit = 28
+
+        if get_token() is None:
+            if os.getenv("HF_TOKEN") is not None: 
+                login(os.getenv("HF_TOKEN"))
+            else:
+                raise RuntimeError("Please login to huggingface or set environment variable HF_TOKEN")
+                
+        self.tokenizer = AutoTokenizer.from_pretrained(config.MODEL_REPO, cache_dir=CACHE_PATH)
+        self.model = AutoModelForCausalLM.from_pretrained(config.MODEL_REPO, cache_dir=CACHE_PATH)
+        self.chunk_size = config.CHUNK_SIZE
+        self.context_limit = config.CONTEXT_LIMIT
         self.next_seq_idx = -1  # lag behind state index
         self.next_state_idx = 0
         self.context = None
@@ -22,10 +34,11 @@ class ModelWrapper():
         self.trim_length = 1
         self.verbose = False
         self.seed_length = 0
-        self.temperature = 2.0
-        self.temp_period = 30 * 60  # every hour
+        self.temp_mean = config.TEMP_MEAN
+        self.temperature = self.temp_mean
+        self.temp_period = config.TEMP_PERIOD  # every hour
+        self.temp_amplitude = config.TEMP_AMPLITUDE
         self.count = 0
-
         # assert self.trim_length >= self.chunk_size
     
     def seed(self, text):
@@ -90,7 +103,7 @@ class ModelWrapper():
         return next_token, self._format_hidden_states(next_state), self.get_context()
     
     def _update_temperature(self):
-        self.temperature = 1.5 * math.sin(2 * math.pi / self.temp_period * self.count) + 2
+        self.temperature = self.temp_amplitude * math.sin(2 * math.pi / self.temp_period * self.count) + self.temp_mean
         if self.verbose: print(f"Temperature: {self.temperature}")
 
     @staticmethod

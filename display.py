@@ -1,17 +1,18 @@
 import pygame
 import sounddevice as sd
-from sonifier import Sonifier
-from model_wrapper import ModelWrapper
 import threading
 import queue
+import config
+from sonifier import Sonifier
+from model_wrapper import ModelWrapper
 
-FULL_SCREEN = True
+FULL_SCREEN = config.FULL_SCREEN
 
 # MODEL SETUP
 
-sonifier = Sonifier((1, 17, 2048), 2/17, fs=44100)
+sonifier = Sonifier((1, 17, 2048), fs=config.FS)
 model = ModelWrapper()
-model.seed("Hello, world")
+model.seed(config.SEED)
 
 
 # PRODUCER
@@ -32,12 +33,8 @@ producer_thread.start()
 # GRAPHICS SETUP
 
 pygame.init()
-VW = 500
-VH = 500
-
-if FULL_SCREEN or True:
-    VW = 1512
-    VH = 982
+VW = config.VW
+VH = config.VH
 INIT_TEXT_COLOR = 255
 INIT_D_TEXT_COLOR = -5
 DD_TEXT_COLOR = 0.05
@@ -61,14 +58,17 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            model.write_history("context.txt")
+            if config.WRITE_HISTORY: 
+                model.write_history("context.txt")
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LSHIFT] and keys[pygame.K_9] and keys[pygame.K_SEMICOLON]:
         running = False
-        model.write_history("context.txt")
+        if config.WRITE_HISTORY: 
+            model.write_history("context.txt")
     elif keys[pygame.K_ESCAPE]:
-        model.write_history("context.txt")
+        if config.WRITE_HISTORY: 
+            model.write_history("context.txt")
         model.__init__()
         model.seed("")
 
@@ -85,7 +85,7 @@ while running:
 
     if not is_playing and not audio_queue.empty():
         current_token, audio, context = audio_queue.get()
-        sd.play(audio)
+        sd.play(audio, samplerate=config.FS)
         text_color = INIT_TEXT_COLOR
         d_text_color = INIT_D_TEXT_COLOR
 
