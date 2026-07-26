@@ -8,7 +8,7 @@ MODEL_REPO = "meta-llama/Llama-3.2-1B"
 SEED = "Hello, world" # starting sequence for generation
 CHUNK_SIZE = 4 # how many tokens to generate in advance
 CONTEXT_LIMIT = 28 # how many tokens to keep before cropping
-WRITE_HISTORY = True # if True, saves token history in context.txt
+WRITE_HISTORY = False # append text history to context.txt
 
 # Temperature oscillator controls
 TEMP_MEAN = 2.0
@@ -25,6 +25,7 @@ FS = 44100
 GAIN = 0.4
 CHANNEL_SPLIT = ("-b", "-f")
 NOTE_LENGTH = 2/17
+SAVE_AUDIO = False # (over)write audio of current run to sonification.wav
 
 # Display settings
 VW = 1512

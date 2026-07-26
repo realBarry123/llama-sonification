@@ -1,12 +1,15 @@
 import pygame
+import torch
 import sounddevice as sd
 import threading
 import queue
+from scipy.io import wavfile
+
 import config
 from sonifier import Sonifier
 from model_wrapper import ModelWrapper
 
-FULL_SCREEN = config.FULL_SCREEN
+sonifications = []
 
 # MODEL SETUP
 
@@ -33,6 +36,7 @@ producer_thread.start()
 # GRAPHICS SETUP
 
 pygame.init()
+FULL_SCREEN = config.FULL_SCREEN
 VW = config.VW
 VH = config.VH
 INIT_TEXT_COLOR = 255
@@ -51,6 +55,7 @@ context = ""
 text_color = INIT_TEXT_COLOR
 d_text_color = INIT_D_TEXT_COLOR
 
+
 while running:
 
     # EVENTS
@@ -66,9 +71,13 @@ while running:
         running = False
         if config.WRITE_HISTORY: 
             model.write_history("context.txt")
+        if config.SAVE_AUDIO:
+            wavfile.write("sonification.wav", config.FS, torch.cat(sonifications, dim=0).numpy())
     elif keys[pygame.K_ESCAPE]:
         if config.WRITE_HISTORY: 
             model.write_history("context.txt")
+        if config.SAVE_AUDIO:
+            wavfile.write("sonification.wav", config.FS, torch.cat(sonifications, dim=0).numpy())
         model.__init__()
         model.seed("")
 
@@ -86,6 +95,8 @@ while running:
     if not is_playing and not audio_queue.empty():
         current_token, audio, context = audio_queue.get()
         sd.play(audio, samplerate=config.FS)
+        if config.SAVE_AUDIO:
+            sonifications.append(audio)
         text_color = INIT_TEXT_COLOR
         d_text_color = INIT_D_TEXT_COLOR
 
