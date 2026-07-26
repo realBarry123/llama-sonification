@@ -1,10 +1,12 @@
-<div id="toc" align="right">
+<div id="toc" align="center">
   <ul style="list-style: none">
     <summary>
       <h1>Language Model Sonification</h1>
     </summary>
   </ul>
 </div>
+
+<video src="https://github.com/user-attachments/assets/b5a318ee-00cc-42b6-a08a-a6505656209f" width="100px"></video>
 
 *"What it is or what it does?"* 
 
