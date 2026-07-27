@@ -58,4 +58,32 @@ Network layers are played one after another, with frequencies resulting from all
 
 The model generates tokens with a periodically fluctuating temperature (approx. 1h, 1.25–2.75) and from a fixed-length context that is cropped with each new token. Since hidden states give rise to the output token, I have decided to show each token on screen **after** the sonification of its generating timestep has played. 
 
-The model is [Llama 3.2 1B Instruct](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct), with 17 hidden layers of 2048 dimensions each. It's also pretty straightforward to go edit the first few lines of `model_wrapper.py` and change it into any other Hugging Face transformer you want. Keep in mind that bigger models take longer to run, and if inference and sonification combined exceeds 2 seconds, it's game over. 
+The model is [Llama 3.2 1B Instruct](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct), with 17 hidden layers of 2048 dimensions each. It's also pretty straightforward to go edit `config.py` and change it into any other Hugging Face transformer you want. Keep in mind that bigger models take longer to run, and if inference and sonification combined exceeds 2 seconds, it's game over. 
+
+## Empirical Results
+
+It's not really the goal of this project to draw useful correlations between the model and its sound. That being said, there are observations worth noting that, if nothing else, show that the sonification does reflect certain properties of the forward pass. 
+
+One observation is that the sonification eventually "settles" into the lower frequencies as the model trains. This is apparent when sonifying the same token across different checkpoints of Pythia 70M, at intervals of 20,000 steps: 
+
+<p align="center">
+  <img width="60%" alt="pythia_learning_l" src="https://github.com/user-attachments/assets/5653f3b5-0164-42d3-b95e-9e5b90bb9cfc" />
+</p>
+
+Another interesting phenomenon is that the first token after a `<|begin_of_text|>` always sounds significantly different from the other ones, as shown here with Llama 3.2 1B: 
+
+<p align="center">
+  <img width="70%" alt="llama1b_bot" src="https://github.com/user-attachments/assets/b190148e-95e3-4667-95bd-ccc8b6c403eb" />
+</p>
+
+A similar thing happens in the Pythia models (410M shown here) for the first token in a new sequence:
+
+<p align="center">
+  <img width="70%" alt="pythia_eot" src="https://github.com/user-attachments/assets/65c9cb61-93fe-49a5-930e-bd317184688e" />
+</p>
+
+## Links
+
+An older, slightly different, more deadpan description on my B21 profile → https://www.building21.ca/scholars/barry-yu
+
+Petition for Building 21, the community that made this project possible → https://c.org/HLfXLz2txk
